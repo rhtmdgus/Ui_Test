@@ -3,32 +3,23 @@ using UnityEngine.SceneManagement;
 using TMPro;
 using System.IO;
 using Newtonsoft.Json;
-
+using System.Collections.Generic;
+using UnityEngine.UI;
 
 public class LoginManager : MonoBehaviour
 {
-	private string registeredID;
-	private string registeredPW;
-	public GameObject mainPanel;
-	public GameObject loginPanel;
-	public GameObject signupPanel;
-	public GameObject menuPanel;
-	public GameObject warningPanel;
-	public TMP_InputField inputID;
-	public TMP_InputField inputPW;
-	public TMP_InputField inputName;
-	public TMP_InputField inputID_Sign;
-	public TMP_InputField inputPW_Sign;
-	public TMP_InputField inputAge;
-	public TMP_InputField inputHeight;
-	public TMP_InputField inputWeight;
-	public TMP_Text warningText;
+	[Header("Login Field")]
+	[SerializeField] GameObject Login;
+	[SerializeField] TMP_Text LoginID, LoginPW;
 
-	[SerializeField] Users UserDatas;
+	[Header("Sign Field")]
+	[SerializeField] GameObject Sign;
+	[SerializeField] TMP_Text SignID, SignPW, SignName,SignAge,SignHeight,SignWeight;
+
+	Users UserDatas;
 	private void Awake()
 	{
 		string path = Path.Combine(Application.persistentDataPath,"User.json");
-		print(path);
 		if (File.Exists(path)) UserDatas = JsonConvert.DeserializeObject<Users>(File.ReadAllText(path));
 		else UserDatas = new Users();
 	}
@@ -39,152 +30,47 @@ public class LoginManager : MonoBehaviour
 		File.WriteAllText(Path.Combine(Application.persistentDataPath, "User.json"),json);
 	}
 
-	void Start()
+	public void LoginAct()
 	{
-		ShowMain();
-	}
+		foreach (var j in UserDatas.User) if (j.id.Equals(LoginID.text)) 
+			{
+				// Login
+				return;
+			}
 
-	public void ShowMain()
-	{
-		mainPanel.SetActive(true);
-		loginPanel.SetActive(false);
-		signupPanel.SetActive(false);
-		menuPanel.SetActive(false);
-	}
-
-	public void OpenLogin()
-	{
-		mainPanel.SetActive(false);
-		loginPanel.SetActive(true);
-	}
-
-	public void OpenSignup()
-	{
-		loginPanel.SetActive(false);
-		signupPanel.SetActive(true);
+		// Error
 	}
 
 	public void CompleteSignup()
 	{
-		string name = inputName.text;
-		registeredID = inputID_Sign.text;
-		registeredPW = inputPW_Sign.text;
-		string age = inputAge.text;
-		string height = inputHeight.text;
-		string weight = inputWeight.text;
 
-		foreach(var s in UserDatas.User)
-		{
-			if(registeredID.Equals(s.id))
+		foreach(var s in UserDatas.User) if(SignID.text.Equals(s.id))
 			{
-				ShowWarning("이미 가입된 아이디입니다.");
-				Debug.Log("이미 가입된 회원 입니다.");
+				//ShowWarning("이미 가입된 아이디입니다.");
 				return;
 			}
-		}
-		UserDatas.User.Add(new UserData(registeredID,registeredPW,name,int.Parse(age),int.Parse(height),int.Parse(weight)));
-
-		Debug.Log($"[회원가입 정보] 이름: {name}, ID: {registeredID}, PW: {registeredPW}, 나이: {age}, 키: {height}, 몸무게: {weight}");
-
-		signupPanel.SetActive(false);
-		mainPanel.SetActive(true);  		// 또는 loginPanel.SetActive(true); 프로젝트 흐름에 따라 선택
-		// 추후 저장, 서버 전송 등으로 확장 가능
+		UserDatas.User.Add(new UserData(SignID.text, SignPW.text, SignName.text, int.Parse(SignAge.text),int.Parse(SignHeight.text),int.Parse(SignWeight.text)));
 	}
 
-	public void BackToLoginFromSignup()
-	{
-		signupPanel.SetActive(false);
-		loginPanel.SetActive(true);
-	}
 
-	public void BackToMainFromLogin()
+	[SerializeField] List<Image> GenderImages;
+	[SerializeField] List<TMP_Text> GenderTexts;
+	Color GenderColor = new Color(0.1725f, 0.1725f, 0.1725f), GenderColor2 = new Color(0.3f,0.3f,0.3f);
+	bool CurMan;
+	public void GenderToggle(bool IsMan)
 	{
-		loginPanel.SetActive(false);
-		mainPanel.SetActive(true);
-	}
-
-	public void BackToLoginFromMenu()
-	{
-		menuPanel.SetActive(false);
-		loginPanel.SetActive(true);
-	}
-
-	public void SignupComplete()
-	{
-		signupPanel.SetActive(false);
-		mainPanel.SetActive(true);
-	}
-
-	public void TryLogin()
-	{
-		string id = inputID.text;
-		string pw = inputPW.text;
-
-		if (string.IsNullOrEmpty(id) || string.IsNullOrEmpty(pw))
+		CurMan = IsMan;
+		if (IsMan)
 		{
-			ShowWarning("아이디 또는 비밀번호를 입력해주세요.");
-			Debug.LogWarning("아이디 또는 비밀번호가 비어 있습니다.");
-			return;
+			GenderImages[0].color = GenderColor2; GenderImages[1].color = Color.gray; GenderTexts[0].color = Color.gray;
+			GenderImages[2].color = GenderColor; GenderImages[3].color = Color.white; GenderTexts[1].color = Color.white;
 		}
-
-		foreach (var s in UserDatas.User)
+		else
 		{
-			if (id == s.id && pw == s.pw)
-			{
-				loginPanel.SetActive(false);
-				menuPanel.SetActive(true);
-				return;
-			}
-		}
-		ShowWarning("아이디 또는 비밀번호가 일치하지 않습니다.");
-		Debug.LogWarning("아이디 또는 비밀번호가 일치하지 않습니다.");
+            GenderImages[2].color = GenderColor2; GenderImages[3].color = Color.gray; GenderTexts[1].color = Color.gray;
+            GenderImages[0].color = GenderColor; GenderImages[1].color = Color.white; GenderTexts[0].color = Color.white;
+        }
 	}
 
-	public void LoginSuccess()
-	{
-		loginPanel.SetActive(false);
-		menuPanel.SetActive(true);
-	}
-
-	public void ShowWarning(string message)
-	{
-		warningText.text = message;
-		warningPanel.SetActive(true);
-		CancelInvoke(nameof(HideWarning));
-		Invoke(nameof(HideWarning), 2.0f);
-	}
-
-	void HideWarning()
-	{
-		warningPanel.SetActive(false);
-	}
-
-
-	public void StartSinglePlay()
-	{
-		Debug.Log("싱글 플레이 씬 로드 (예시)");
-		// SceneManager.LoadScene("SinglePlayerScene");
-	}
-
-	public void StartMultiPlay()
-	{
-		Debug.Log("멀티 플레이 씬 로드 (예시)");
-		// SceneManager.LoadScene("MultiPlayerScene");
-	}
-
-	public void OpenMyPage()
-	{
-		Debug.Log("마이페이지 씬 로드 (예시)");
-		// SceneManager.LoadScene("MyPageScene");
-	}
-
-	public void ExitApp()
-	{
-#if UNITY_EDITOR
-		UnityEditor.EditorApplication.isPlaying = false;
-#else
-        Application.Quit();
-#endif
-	}
 }
 

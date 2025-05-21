@@ -17,6 +17,7 @@ public class Users
 [System.Serializable]
 public class UserData
 {
+	public bool gender; // 0 : Man, 1 : Woman
 	public string id, pw, name;
 	public int age, height, weight;
 	public UserData() { }
