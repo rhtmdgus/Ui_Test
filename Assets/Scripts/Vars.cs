@@ -21,7 +21,7 @@ public class UserData
 	public string id, pw, name;
 	public int age, height, weight;
 	public UserData() { }
-	public UserData(string id, string pw,string name, int age, int height,int weight)
+	public UserData(string id, string pw,string name, int age, int height,int weight, bool gender)
 	{
 		this.id = id;
 		this.pw = pw;
@@ -29,5 +29,6 @@ public class UserData
 		this.age = age;
 		this.height = height;
 		this.weight = weight;
+		this.gender = gender;
 	}
 }

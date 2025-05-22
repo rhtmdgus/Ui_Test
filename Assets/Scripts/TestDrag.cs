@@ -1,4 +1,4 @@
-using UnityEditor.Experimental.GraphView;
+
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -16,7 +16,7 @@ public class TestDrag : MonoBehaviour, IPointerDownHandler, IDragHandler
             eventData.pressEventCamera,
             out var worldPoint
             );
-        AnchorGap = Dragged.position - worldPoint; AnchorGap.z = 0;
+        AnchorGap = Dragged.position - worldPoint;
         Dragged.SetAsLastSibling();
     }
 

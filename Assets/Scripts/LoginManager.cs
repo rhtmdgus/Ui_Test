@@ -8,6 +8,8 @@ using UnityEngine.UI;
 
 public class LoginManager : MonoBehaviour
 {
+	public static LoginManager lom;
+	[SerializeField] public GameObject Keyboard;
 	[Header("Login Field")]
 	[SerializeField] GameObject Login;
 	[SerializeField] TMP_Text LoginID, LoginPW;
@@ -19,6 +21,7 @@ public class LoginManager : MonoBehaviour
 	Users UserDatas;
 	private void Awake()
 	{
+		lom = this;
 		string path = Path.Combine(Application.persistentDataPath,"User.json");
 		if (File.Exists(path)) UserDatas = JsonConvert.DeserializeObject<Users>(File.ReadAllText(path));
 		else UserDatas = new Users();
@@ -49,7 +52,7 @@ public class LoginManager : MonoBehaviour
 				//ShowWarning("이미 가입된 아이디입니다.");
 				return;
 			}
-		UserDatas.User.Add(new UserData(SignID.text, SignPW.text, SignName.text, int.Parse(SignAge.text),int.Parse(SignHeight.text),int.Parse(SignWeight.text)));
+		
 	}
 
 
@@ -74,8 +77,9 @@ public class LoginManager : MonoBehaviour
 
 	public void SignUp()
 	{
-
-	}
+		if (SignID.text.Equals("") || SignPW.text.Equals("") || SignName.text.Equals("")) { ShowError("필수 항목 누락!"); return; }
+        UserDatas.User.Add(new UserData(SignID.text, SignPW.text, SignName.text, 0, int.Parse(SignHeight.text), int.Parse(SignWeight.text),CurMan));
+    }
 	[SerializeField] GameObject ErrorObj;
 	[SerializeField] TMP_Text ErrorMessage;
 	public void ShowError(string text)

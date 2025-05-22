@@ -8,7 +8,7 @@ using UnityEngine.Windows;
 
 public class KeyboardScript : MonoBehaviour
 {
-    public TMP_Text tester;
+    public static KeyboardScript keyboard;
     public TMP_InputField TextField;
     public GameObject KorLayout, KorLayoutBig, EngLayoutSml, EngLayoutBig, SymbLayout;
 
@@ -19,15 +19,21 @@ public class KeyboardScript : MonoBehaviour
         "","ㄱ","ㄲ","ㄳ","ㄴ","ㄵ","ㄶ","ㄷ","ㄹ","ㄺ","ㄻ","ㄼ","ㄽ","ㄾ","ㄿ","ㅀ","ㅁ","ㅂ","ㅄ","ㅅ","ㅆ","ㅇ","ㅈ","ㅊ","ㅋ","ㅌ","ㅍ","ㅎ"
     };
 
+    private void Awake()
+    {
+        if (keyboard == null) keyboard = this;
+        else Destroy(gameObject);
+    }
 
     int HangulSub = 0;
-    int[] sub = { 0,0, 0 };
+    int[] sub = { 0, 0, 0 };
     public void HangulFunction(string input)
     {
+
         if (HangulSub == 0)
         {
             int i = Array.IndexOf(choseong, input);
-            tester.text += input;
+            TextField.text += input;
             if (i >= 0)
             {
                 sub[0] = i;
@@ -39,14 +45,14 @@ public class KeyboardScript : MonoBehaviour
             int j = Array.IndexOf(jungseong, input);
             if (j >= 0)
             {
-                tester.text = tester.text.Remove(tester.text.Length - 1);
+                TextField.text = TextField.text.Remove(TextField.text.Length - 1);
                 sub[1] = j;
-                tester.text += (char)(0xAC00 + sub[0] * 588 + j * 28);
+                TextField.text += (char)(0xAC00 + sub[0] * 588 + j * 28);
                 HangulSub = 2;
             }
             else
             {
-                tester.text += choseong[sub[0]];
+                TextField.text += choseong[sub[0]];
                 HangulSub = 0;
                 HangulFunction(input); // 재시도
             }
@@ -60,22 +66,22 @@ public class KeyboardScript : MonoBehaviour
 
             if (sub[1] == 8)
             {
-                if (k == 0) { sub[1] = 9;DoubleMedial = true; }
-                else if (k == 1) {sub[1] = 10; DoubleMedial = true; }
-                else if (k == 20){sub[1] = 11; DoubleMedial = true; }
+                if (k == 0) { sub[1] = 9; DoubleMedial = true; }
+                else if (k == 1) { sub[1] = 10; DoubleMedial = true; }
+                else if (k == 20) { sub[1] = 11; DoubleMedial = true; }
             }
             else if (sub[1] == 13)
             {
-                if (k == 4) {sub[1] = 14; DoubleMedial = true; }
-                else if (k == 5) {sub[1] = 15; DoubleMedial = true;}
-                else if (k == 20) {sub[1] = 16; DoubleMedial = true; }
+                if (k == 4) { sub[1] = 14; DoubleMedial = true; }
+                else if (k == 5) { sub[1] = 15; DoubleMedial = true; }
+                else if (k == 20) { sub[1] = 16; DoubleMedial = true; }
             }
-            else if (sub[1] == 18 && k == 20) {sub[1] = 19; DoubleMedial = true; }
+            else if (sub[1] == 18 && k == 20) { sub[1] = 19; DoubleMedial = true; }
 
             if (DoubleMedial)
             {
-                tester.text = tester.text.Remove(tester.text.Length - 1);
-                tester.text += (char)(0xAC00 + sub[0] * 588 + sub[1] * 28);
+                TextField.text = TextField.text.Remove(TextField.text.Length - 1);
+                TextField.text += (char)(0xAC00 + sub[0] * 588 + sub[1] * 28);
                 return;
             }
 
@@ -83,10 +89,10 @@ public class KeyboardScript : MonoBehaviour
             if (k >= 0)
             {
                 HangulSub = 0;
-                tester.text = tester.text.Remove(tester.text.Length - 1);
+                TextField.text = TextField.text.Remove(TextField.text.Length - 1);
                 sub[2] = k;
                 composed = (char)(0xAC00 + sub[0] * 588 + sub[1] * 28 + sub[2]);
-                tester.text += composed;
+                TextField.text += composed;
             }
             else
             {
@@ -98,17 +104,49 @@ public class KeyboardScript : MonoBehaviour
 
     public void alphabetFunction(string alphabet)
     {
+        TextField.text += alphabet;
     }
 
-    public void RegisterSelf(TMP_InputField sc)
+    public void IntFunction(char value)
     {
-        TextField = sc;
+        TextField.text += value;
+    }
+
+    public void SpecFunction(char value)
+    {
+        TextField.text += value;
+    }
+
+    List<bool> LanSup = new List<bool>();
+    public void RegisterSelf(TMP_InputField sc,List<bool> lansup = null)
+    {
+        CloseAllLayouts();
+        if(sc != null)
+        {
+            TextField = sc; LanSup = lansup;
+            TextField.text = $"{sc.name} : ";
+            foreach (var j in LanSup) { if (j) TextField.text += "T"; else TextField.text += "F"; }
+            if (LanSup[1]) EngLayoutSml.SetActive(true);
+            else if (LanSup[2]) KorLayout.SetActive(true);
+            else SymbLayout.SetActive(true);
+        }
+    }
+
+    public void KeyboardChange(int type)
+    {
+        CloseAllLayouts();
+        TextField.text = "";
+        foreach (var j in LanSup) { if (j) TextField.text += "T "; else TextField.text += "F"; }
+        
+        if (type == 0) SymbLayout.SetActive(true);
+        if (type == 1) EngLayoutSml.SetActive(true);
+        if (type == 2) KorLayout.SetActive(true);
     }
 
     public void BackSpace()
     {
 
-        if(TextField.text.Length>0) TextField.text= TextField.text.Remove(TextField.text.Length-1);
+        if (TextField.text.Length > 0) { TextField.text = TextField.text.Remove(TextField.text.Length - 1); HangulSub = 0; }
 
     }
 
@@ -121,6 +159,11 @@ public class KeyboardScript : MonoBehaviour
         EngLayoutBig.SetActive(false);
         SymbLayout.SetActive(false);
 
+    }
+
+    private void OnEnable()
+    {
+        HangulSub = 0;
     }
 
     public void ShowLayout(GameObject SetLayout)
