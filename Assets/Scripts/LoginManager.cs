@@ -72,5 +72,15 @@ public class LoginManager : MonoBehaviour
         }
 	}
 
+	public void SignUp()
+	{
+
+	}
+	[SerializeField] GameObject ErrorObj;
+	[SerializeField] TMP_Text ErrorMessage;
+	public void ShowError(string text)
+	{
+		ErrorObj.SetActive(true); ErrorMessage.text = text;
+	}
 }
 
