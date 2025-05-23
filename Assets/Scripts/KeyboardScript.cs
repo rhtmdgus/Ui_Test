@@ -26,18 +26,33 @@ public class KeyboardScript : MonoBehaviour
     }
 
     int HangulSub = 0;
-    int[] sub = { 0, 0, 0 };
+    int[] sub = { -1, -1, -1 };
     public void HangulFunction(string input)
     {
-
-        if (HangulSub == 0)
+        if (HangulSub == 0 || HangulSub == 3)
         {
+            HangulSub = 0;
             int i = Array.IndexOf(choseong, input);
-            TextField.text += input;
             if (i >= 0)
             {
                 sub[0] = i;
                 HangulSub = 1;
+                TextField.text += input;
+            }
+            else
+            {
+                int x = Array.IndexOf(jungseong, input);
+                if (sub[2] != -1 && sub[2] != 3 && sub[2] != 5 && sub[2] != 6 && !(sub[2] >= 9 && sub[2] <= 15) && sub[2] != 18 && x >= 0)
+                {
+                    TextField.text = TextField.text.Remove(TextField.text.Length - 1);
+                    TextField.text += (char)(0xAC00 + sub[0] * 588 + sub[1] * 28); TextField.text += jongseong[sub[2]];
+                    sub[0] = Array.IndexOf(choseong, jongseong[sub[2]]); HangulSub = 1; HangulFunction(input);
+                }
+                else
+                {
+                    TextField.text += input;
+                    sub[0] = sub[1] = sub[2] = -1;
+                }
             }
         }
         else if (HangulSub == 1)
@@ -54,7 +69,6 @@ public class KeyboardScript : MonoBehaviour
             {
                 TextField.text += choseong[sub[0]];
                 HangulSub = 0;
-                HangulFunction(input); // 재시도
             }
         }
         else if (HangulSub == 2)
@@ -88,7 +102,7 @@ public class KeyboardScript : MonoBehaviour
             k = Array.IndexOf(jongseong, input);
             if (k >= 0)
             {
-                HangulSub = 0;
+                HangulSub = 3;
                 TextField.text = TextField.text.Remove(TextField.text.Length - 1);
                 sub[2] = k;
                 composed = (char)(0xAC00 + sub[0] * 588 + sub[1] * 28 + sub[2]);
@@ -104,28 +118,29 @@ public class KeyboardScript : MonoBehaviour
 
     public void alphabetFunction(string alphabet)
     {
+        HangulSub = 0; sub[0] = sub[1] = sub[2] = -1;
         TextField.text += alphabet;
     }
 
     public void IntFunction(char value)
     {
+        HangulSub = 0; sub[0] = sub[1] = sub[2] = -1;
         TextField.text += value;
     }
 
     public void SpecFunction(char value)
     {
+        HangulSub = 0; sub[0] = sub[1] = sub[2] = -1;
         TextField.text += value;
     }
 
     List<bool> LanSup = new List<bool>();
-    public void RegisterSelf(TMP_InputField sc,List<bool> lansup = null)
+    public void RegisterSelf(TMP_InputField sc, List<bool> lansup = null)
     {
         CloseAllLayouts();
-        if(sc != null)
+        if (sc != null)
         {
             TextField = sc; LanSup = lansup;
-            TextField.text = $"{sc.name} : ";
-            foreach (var j in LanSup) { if (j) TextField.text += "T"; else TextField.text += "F"; }
             if (LanSup[1]) EngLayoutSml.SetActive(true);
             else if (LanSup[2]) KorLayout.SetActive(true);
             else SymbLayout.SetActive(true);
@@ -134,19 +149,34 @@ public class KeyboardScript : MonoBehaviour
 
     public void KeyboardChange(int type)
     {
-        CloseAllLayouts();
-        TextField.text = "";
-        foreach (var j in LanSup) { if (j) TextField.text += "T "; else TextField.text += "F"; }
-        
-        if (type == 0) SymbLayout.SetActive(true);
-        if (type == 1) EngLayoutSml.SetActive(true);
-        if (type == 2) KorLayout.SetActive(true);
+
+        if (type == 0 && LanSup[0]) { CloseAllLayouts(); SymbLayout.SetActive(true); }
+        if (type == 1 && LanSup[1])
+        {
+            CloseAllLayouts(); EngLayoutSml.SetActive(true);
+        }
+        if (type == 2 && LanSup[2]) { CloseAllLayouts(); KorLayout.SetActive(true); }
     }
 
     public void BackSpace()
     {
-
-        if (TextField.text.Length > 0) { TextField.text = TextField.text.Remove(TextField.text.Length - 1); HangulSub = 0; }
+        if (TextField.text.Length > 0)
+        {
+            TextField.text = TextField.text.Remove(TextField.text.Length - 1);
+            if (HangulSub == 2)
+            {
+                HangulSub = 1; TextField.text += choseong[sub[0]];
+            }
+            else if (HangulSub == 3)
+            {
+                HangulSub = 2; TextField.text += (char)(0xAC00 + sub[0] * 588 + sub[1] * 28);
+            }
+            else
+            {
+                HangulSub = 0;
+                sub[0] = sub[1] = sub[2] = -1;
+            }
+        }
 
     }
 

@@ -35,25 +35,14 @@ public class LoginManager : MonoBehaviour
 
 	public void LoginAct()
 	{
-		foreach (var j in UserDatas.User) if (j.id.Equals(LoginID.text)) 
+		foreach (var j in UserDatas.User) if (j.id.Equals(LoginID.text) && j.pw.Equals(LoginPW.text)) 
 			{
 				// Login
 				return;
 			}
-
-		// Error
+		ShowError("ID or PW 불일치");
 	}
 
-	public void CompleteSignup()
-	{
-
-		foreach(var s in UserDatas.User) if(SignID.text.Equals(s.id))
-			{
-				//ShowWarning("이미 가입된 아이디입니다.");
-				return;
-			}
-		
-	}
 
 
 	[SerializeField] List<Image> GenderImages;
@@ -77,8 +66,14 @@ public class LoginManager : MonoBehaviour
 
 	public void SignUp()
 	{
-		if (SignID.text.Equals("") || SignPW.text.Equals("") || SignName.text.Equals("")) { ShowError("필수 항목 누락!"); return; }
-        UserDatas.User.Add(new UserData(SignID.text, SignPW.text, SignName.text, 0, int.Parse(SignHeight.text), int.Parse(SignWeight.text),CurMan));
+		if (SignID.text.Equals("") || SignPW.text.Equals("") || SignName.text.Equals("")) { ShowError("필수 항목 누락"); return; }
+		foreach(var j in UserDatas.User)
+		{
+			if (j.id.Equals(SignID.text)) { ShowError("ID 중복"); return; }
+		}
+        UserDatas.User.Add(new UserData(SignID.text, SignPW.text, SignName.text, 0, 0, 0,CurMan));
+		Login.SetActive(true); Sign.SetActive(false);
+		ShowError("가입 성공");
     }
 	[SerializeField] GameObject ErrorObj;
 	[SerializeField] TMP_Text ErrorMessage;

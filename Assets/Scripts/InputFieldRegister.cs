@@ -30,16 +30,15 @@ public class InputFieldRegister : MonoBehaviour
         KeyboardScript.keyboard.RegisterSelf(Field, LanSupport);
         KeyboardScript.keyboard.gameObject.SetActive(true);
     }
-    /*public void OnDeSelect(string _)
-    {
-        KeyboardScript.keyboard.RegisterSelf(null);
-        KeyboardScript.keyboard.gameObject.SetActive(false);
-    }*/
 
     public void OnValueChange(string value)
     {
         //if (Field.text.Length > MaxNum) Field.text = Field.text.Remove(MaxNum);
     }
 
+    public void OnDisable()
+    {
+        Field.text = "";
+    }
 
 }
