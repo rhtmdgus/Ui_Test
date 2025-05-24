@@ -146,6 +146,9 @@ PlayerSettings:
   bundleVersion: 0.1
   preloadedAssets:
   - {fileID: 11400000, guid: 065308598cd36a24ea72f1c7ee5b36ef, type: 2}
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
   metroInputSource: 0
   wsaTransparentSwapchain: 0
