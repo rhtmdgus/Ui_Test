@@ -23,6 +23,7 @@ public class KeyboardScript : MonoBehaviour
     {
         if (keyboard == null) keyboard = this;
         else Destroy(gameObject);
+        gameObject.SetActive(false);
     }
 
     int HangulSub = 0;

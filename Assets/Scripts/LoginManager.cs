@@ -5,6 +5,7 @@ using System.IO;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using UnityEngine.UI;
+using UnityEngine.Events;
 
 public class LoginManager : MonoBehaviour
 {
@@ -13,10 +14,11 @@ public class LoginManager : MonoBehaviour
 	[Header("Login Field")]
 	[SerializeField] GameObject Login;
 	[SerializeField] TMP_Text LoginID, LoginPW;
+	[SerializeField] UnityEvent SuccessEvent;
 
 	[Header("Sign Field")]
 	[SerializeField] GameObject Sign;
-	[SerializeField] TMP_Text SignID, SignPW, SignName,SignAge,SignHeight,SignWeight;
+	[SerializeField] TMP_Text SignID, SignPW, SignName,SignHeight,SignWeight;
 
 	Users UserDatas;
 	private void Awake()
@@ -25,19 +27,24 @@ public class LoginManager : MonoBehaviour
 		string path = Path.Combine(Application.persistentDataPath,"User.json");
 		if (File.Exists(path)) UserDatas = JsonConvert.DeserializeObject<Users>(File.ReadAllText(path));
 		else UserDatas = new Users();
+		gameObject.SetActive(false);
 	}
 
-	private void OnApplicationQuit()
+
+	private void OnDisable()
 	{
-		string json = JsonConvert.SerializeObject(UserDatas);
-		File.WriteAllText(Path.Combine(Application.persistentDataPath, "User.json"),json);
+		Login.SetActive(true);
+		Sign.SetActive(false); SignID.text = ""; SignPW.text = ""; SignName.text = ""; SignHeight.text = ""; SignWeight.text = "";
+		/*string json = JsonConvert.SerializeObject(UserDatas);
+		File.WriteAllText(Path.Combine(Application.persistentDataPath, "User.json"),json);*/
 	}
 
 	public void LoginAct()
 	{
 		foreach (var j in UserDatas.User) if (j.id.Equals(LoginID.text) && j.pw.Equals(LoginPW.text)) 
 			{
-				// Login
+				if (SuccessEvent != null) SuccessEvent.Invoke();
+				gameObject.SetActive(false);
 				return;
 			}
 		ShowError("ID or PW ∫“¿œƒ°");
