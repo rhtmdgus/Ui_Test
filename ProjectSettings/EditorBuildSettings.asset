@@ -6,12 +6,19 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 0
-    path: Assets/Scenes/SampleScene.unity
+    path: Assets/GVOZDY/Garden Wooden Fence modular outdoor prop/Scenes/SampleScene.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
-  - enabled: 1
-    path: Assets/Samples/XR Interaction Toolkit/2.6.4/Starter Assets/DemoScene.unity
+  - enabled: 0
+    path: Assets/Scenes/DemoScene.unity
     guid: 319dafa5c80f29f428dc1e0d03f04177
+  - enabled: 0
+    path: Assets/Scenes/LoginScene.unity
+    guid: 4df2ef403358bef489a99cefb233e820
+  - enabled: 1
+    path: Assets/Scenes/MainScene.unity
+    guid: 40032336215f28f468a79852544916db
   m_configObjects:
+    Unity.XR.Oculus.Settings: {fileID: 11400000, guid: b44981a0a4e53674b96eee789a0c0c7a, type: 2}
     com.unity.input.settings: {fileID: 11400000, guid: b2bcfbec923b55244a35acec1f7d2c86, type: 2}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: be770b5335ac62f4786bcddb33993bc8, type: 2}
     com.unity.xr.openxr.settings4: {fileID: 11400000, guid: df8e522dc9c83814690b6840cfb0ba04, type: 2}
